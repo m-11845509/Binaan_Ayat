@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembina Ayat SIBAB SIBAD SIBAM</title>
+    <script src="/_sdk/data_sdk.js"></script>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            width: 100%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .component-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .component-btn {
+            flex: 1;
+            min-width: 180px;
+            padding: 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .component-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .component-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .component-btn h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.5em;
+        }
+
+        .component-btn p {
+            margin: 0;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1.05em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .preview-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .preview-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .preview-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+            font-weight: 500;
+            min-height: 50px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .saved-sentences {
+            margin-top: 30px;
+        }
+
+        .saved-sentences h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .sentence-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sentence-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sentence-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .component-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-sibab {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .badge-sibad {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .badge-sibam {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .sentence-text {
+            font-size: 1.2em;
+            color: #333;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .sentence-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .btn-delete {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #ee5a6f;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .limit-warning {
+            background: #ff4757;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="tajuk-utama">Pembina Ayat SIBAB SIBAD SIBAM</h1>
+            <p id="arahan">Pilih komponen dan isi maklumat untuk membina ayat</p>
+        </div>
+        <div class="main-content">
+            <div id="limit-warning" class="limit-warning" style="display: none;">
+                Had maksimum 999 ayat telah dicapai. Sila padam beberapa ayat terlebih dahulu.
+            </div>
+            <div class="component-selector">
+                <div class="component-btn active" data-component="SIBAB">
+                    <h3>SIBAB</h3>
+                    <p>Siapa + Buat Apa + Bila</p>
+                </div>
+                <div class="component-btn" data-component="SIBAD">
+                    <h3>SIBAD</h3>
+                    <p>Siapa + Buat Apa + Di mana</p>
+                </div>
+                <div class="component-btn" data-component="SIBAM">
+                    <h3>SIBAM</h3>
+                    <p>Siapa + Buat Apa + Mengapa</p>
+                </div>
+            </div>
+            <div class="form-section">
+                <div class="form-group"><label for="siapa">Siapa:</label> <input type="text" id="siapa"
+                        placeholder="Contoh: Ali, Siti, Guru">
+                </div>
+                <div class="form-group"><label for="buat-apa">Buat Apa:</label> <input type="text" id="buat-apa"
+                        placeholder="Contoh: membaca buku, bermain bola">
+                </div>
+                <div class="form-group"><label for="bila-dimana-mengapa" id="label-ketiga">Bila:</label> <input
+                        type="text" id="bila-dimana-mengapa" placeholder="Contoh: pada waktu pagi">
+                </div>
+            </div>
+            <div class="preview-section">
+                <h3>👁️ Pratonton Ayat:</h3>
+                <div class="preview-text" id="preview">
+                    Sila isi semua medan untuk melihat ayat
+                </div>
+            </div>
+            <div class="button-group"><button class="btn btn-primary" id="btn-reset">🔄 Reset</button> <button
+                    class="btn btn-success" id="btn-save">💾 Simpan Ayat</button> <button class="btn btn-success"
+                    id="btn-pdf">📄 Muat Turun PDF</button>
+            </div>
+            <div class="saved-sentences">
+                <h2>📚 Ayat Tersimpan</h2>
+                <div id="sentences-list"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let currentComponent = 'SIBAB';
+        let allSentences = [];
+        const localStorageKey = 'sibabSibadSibamSentences';
+
+        // --- Local Storage Functions ---
+
+        function loadSentencesFromLocalStorage() {
+            try {
+                const storedData = localStorage.getItem(localStorageKey);
+                if (storedData) {
+                    allSentences = JSON.parse(storedData);
+                } else {
+                    allSentences = [];
+                }
+                renderSentencesList();
+                updateLimitWarning();
+            } catch (e) {
+                console.error("Error loading data from Local Storage:", e);
+                showToast('Ralat memuatkan data dari storan tempatan');
+                allSentences = [];
+            }
+        }
+
+        function saveSentencesToLocalStorage() {
+            try {
+                localStorage.setItem(localStorageKey, JSON.stringify(allSentences));
+                renderSentencesList();
+                updateLimitWarning();
+            } catch (e) {
+                console.error("Error saving data to Local Storage:", e);
+                showToast('Ralat menyimpan data ke storan tempatan');
+            }
+        }
+
+        function initializeApp() {
+            loadSentencesFromLocalStorage();
+        }
+
+        // --- Utility Functions ---
+
+        function updateLimitWarning() {
+            const warning = document.getElementById('limit-warning');
+            // Had maksimum 999 dikekalkan sebagai contoh
+            if (allSentences.length >= 999) {
+                warning.style.display = 'block';
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        function updatePreview() {
+            const siapa = document.getElementById('siapa').value.trim();
+            const buatApa = document.getElementById('buat-apa').value.trim();
+            const ketiga = document.getElementById('bila-dimana-mengapa').value.trim();
+            const preview = document.getElementById('preview');
+
+            if (siapa && buatApa && ketiga) {
+                preview.textContent = `${siapa} ${buatApa} ${ketiga}.`;
+            } else {
+                preview.textContent = 'Sila isi semua medan untuk melihat ayat';
+            }
+        }
+
+        function switchComponent(component) {
+            currentComponent = component;
+
+            document.querySelectorAll('.component-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.querySelector(`[data-component="${component}"]`).classList.add('active');
+
+            const label = document.getElementById('label-ketiga');
+            const input = document.getElementById('bila-dimana-mengapa');
+
+            if (component === 'SIBAB') {
+                label.textContent = 'Bila:';
+                input.placeholder = 'Contoh: pada waktu pagi, semalam';
+            } else if (component === 'SIBAD') {
+                label.textContent = 'Di mana:';
+                input.placeholder = 'Contoh: di taman, di sekolah';
+            } else if (component === 'SIBAM') {
+                label.textContent = 'Mengapa:';
+                input.placeholder = 'Contoh: kerana ingin sihat, untuk belajar';
+            }
+
+            updatePreview();
+        }
+
+        function saveSentence() {
+            if (allSentences.length >= 999) {
+                showToast('Had maksimum 999 ayat telah dicapai');
+                return;
+            }
+
+            const siapa = document.getElementById('siapa').value.trim();
+            const buatApa = document.getElementById('buat-apa').value.trim();
+            const ketiga = document.getElementById('bila-dimana-mengapa').value.trim();
+
+            if (!siapa || !buatApa || !ketiga) {
+                showToast('Sila isi semua medan');
+                return;
+            }
+
+            const ayatLengkap = `${siapa} ${buatApa} ${ketiga}.`;
+
+            const btnSave = document.getElementById('btn-save');
+            btnSave.disabled = true;
+            btnSave.textContent = '💾 Menyimpan...';
+
+            // Generate unique ID locally
+            const uniqueId = Date.now() + Math.random().toString(36).substring(2, 9);
+
+            const dataToSave = {
+                id: uniqueId, // Menggunakan ID unik lokal
+                komponen: currentComponent,
+                siapa: siapa,
+                buat_apa: buatApa,
+                bila_dimana_mengapa: ketiga,
+                ayat_lengkap: ayatLengkap,
+                tarikh: new Date().toISOString()
+            };
+
+            allSentences.push(dataToSave);
+            saveSentencesToLocalStorage();
+
+            btnSave.disabled = false;
+            btnSave.textContent = '💾 Simpan Ayat';
+
+            showToast('Ayat berjaya disimpan secara lokal!');
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('siapa').value = '';
+            document.getElementById('buat-apa').value = '';
+            document.getElementById('bila-dimana-mengapa').value = '';
+            updatePreview();
+        }
+
+        function renderSentencesList() {
+            const list = document.getElementById('sentences-list');
+
+            if (allSentences.length === 0) {
+                list.innerHTML = '<div class="empty-state">Tiada ayat tersimpan lagi. Cuba bina ayat pertama anda!</div>';
+                return;
+            }
+
+            const sortedSentences = [...allSentences].sort((a, b) => {
+                return new Date(b.tarikh) - new Date(a.tarikh);
+            });
+
+            list.innerHTML = sortedSentences.map(sentence => {
+                const date = new Date(sentence.tarikh);
+                const formattedDate = date.toLocaleDateString('ms-MY', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const badgeClass = `badge-${sentence.komponen.toLowerCase()}`;
+
+                const labelKetiga = sentence.komponen === 'SIBAB' ? 'Bila' :
+                    sentence.komponen === 'SIBAD' ? 'Di mana' : 'Mengapa';
+
+                return `
+            <div class="sentence-card">
+                <div class="sentence-card-header">
+                    <span class="component-badge ${badgeClass}">${sentence.komponen}</span>
+                    <button class="btn-delete" onclick="deleteSentence('${sentence.id}')">🗑️ Padam</button>
+                </div>
+                <div class="sentence-text">${sentence.ayat_lengkap}</div>
+                <div class="sentence-meta-grid">
+                    <div class="meta-item"><strong>Siapa:</strong> ${sentence.siapa}</div>
+                    <div class="meta-item"><strong>Buat Apa:</strong> ${sentence.buat_apa}</div>
+                    <div class="meta-item"><strong>${labelKetiga}:</strong> ${sentence.bila_dimana_mengapa}</div>
+                </div>
+                <div class="sentence-meta-grid">
+                    <div class="meta-item">📅 ${formattedDate}</div>
+                </div>
+            </div>
+        `;
+            }).join('');
+        }
+
+        // Sekarang deleteSentence menggunakan ID unik lokal
+        function deleteSentence(id) {
+            const initialLength = allSentences.length;
+            allSentences = allSentences.filter(s => s.id !== id);
+
+            if (allSentences.length < initialLength) {
+                saveSentencesToLocalStorage();
+                showToast('Ayat berjaya dipadam');
+            } else {
+                showToast('Ralat memadam ayat');
+            }
+        }
+
+        function generatePDF() {
+            if (allSentences.length === 0) {
+                showToast('Tiada ayat untuk dimuat turun');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont('helvetica');
+            doc.setFontSize(18);
+            doc.text('Senarai Ayat SIBAB SIBAD SIBAM', 105, 20, { align: 'center' });
+
+            doc.setFontSize(10);
+            doc.text(`Tarikh: ${new Date().toLocaleDateString('ms-MY')}`, 105, 28, { align: 'center' });
+
+            let yPosition = 40;
+            const pageHeight = doc.internal.pageSize.height;
+            const margin = 20;
+
+            allSentences.forEach((sentence, index) => {
+                if (yPosition > pageHeight - 40) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`${index + 1}. [${sentence.komponen}]`, margin, yPosition);
+
+                yPosition += 7;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(11);
+
+                const lines = doc.splitTextToSize(sentence.ayat_lengkap, 170);
+                doc.text(lines, margin + 5, yPosition);
+                yPosition += lines.length * 6;
+
+                doc.setFontSize(9);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Siapa: ${sentence.siapa}`, margin + 5, yPosition);
+                yPosition += 5;
+                doc.text(`Buat Apa: ${sentence.buat_apa}`, margin + 5, yPosition);
+                yPosition += 5;
+
+                const labelKetiga = sentence.komponen === 'SIBAB' ? 'Bila' :
+                    sentence.komponen === 'SIBAD' ? 'Di mana' : 'Mengapa';
+                doc.text(`${labelKetiga}: ${sentence.bila_dimana_mengapa}`, margin + 5, yPosition);
+
+                yPosition += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            doc.save('ayat-sibab-sibad-sibam.pdf');
+            showToast('PDF berjaya dimuat turun!');
+        }
+
+        function showToast(message) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        document.querySelectorAll('.component-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchComponent(btn.dataset.component);
+            });
+        });
+
+        document.getElementById('siapa').addEventListener('input', updatePreview);
+        document.getElementById('buat-apa').addEventListener('input', updatePreview);
+        document.getElementById('bila-dimana-mengapa').addEventListener('input', updatePreview);
+
+        document.getElementById('btn-save').addEventListener('click', saveSentence);
+        document.getElementById('btn-reset').addEventListener('click', resetForm);
+        document.getElementById('btn-pdf').addEventListener('click', generatePDF);
+
+        // Remove elementSdk initialization as it's no longer needed for local storage
+        // Remove dataSdk initialization as it's no longer needed for local storage
+
+        initializeApp();
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9a455f46d6ba26f2',t:'MTc2NDExODAyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>
