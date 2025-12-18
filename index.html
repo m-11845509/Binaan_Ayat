@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ms">
 
@@ -43,6 +42,15 @@
         .header p {
             font-size: 1.1em;
             opacity: 0.95;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding-bottom: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
         }
 
         .main-content {
@@ -317,6 +325,24 @@
             text-align: center;
             font-weight: 600;
         }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
     <style>
         @view-transition {
@@ -335,6 +361,16 @@
         <div class="main-content">
             <div id="limit-warning" class="limit-warning" style="display: none;">
                 Had maksimum 999 ayat telah dicapai. Sila padam beberapa ayat terlebih dahulu.
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="form-group">
+                    <label for="nama-pelajar">Nama Pelajar:</label>
+                    <input type="text" id="nama-pelajar" placeholder="Contoh: Ahmad Bin Zaki">
+                </div>
+                <div class="form-group">
+                    <label for="kelas-pelajar">Kelas:</label>
+                    <input type="text" id="kelas-pelajar" placeholder="Contoh: 3A1">
+                </div>
             </div>
             <div class="component-selector">
                 <div class="component-btn active" data-component="SIBAB">
@@ -369,12 +405,16 @@
             </div>
             <div class="button-group"><button class="btn btn-primary" id="btn-reset">🔄 Reset</button> <button
                     class="btn btn-success" id="btn-save">💾 Simpan Ayat</button> <button class="btn btn-success"
-                    id="btn-pdf">📄 Muat Turun PDF</button>
+                    id="btn-pdf">📄 Muat Turun PDF</button> <button class="btn" id="btn-delete-all"
+                    style="background: #ff4757; color: white;">🗑️ Padam Semua</button>
             </div>
             <div class="saved-sentences">
                 <h2>📚 Ayat Tersimpan</h2>
                 <div id="sentences-list"></div>
             </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 Dibangunkan oleh Cikgu Jimrny, Cikgu Sia dan Samuel Kong</p>
         </div>
     </div>
     <script>
@@ -473,12 +513,14 @@
                 return;
             }
 
+            const nama = document.getElementById('nama-pelajar').value.trim();
+            const kelas = document.getElementById('kelas-pelajar').value.trim();
             const siapa = document.getElementById('siapa').value.trim();
             const buatApa = document.getElementById('buat-apa').value.trim();
             const ketiga = document.getElementById('bila-dimana-mengapa').value.trim();
 
-            if (!siapa || !buatApa || !ketiga) {
-                showToast('Sila isi semua medan');
+            if (!nama || !kelas || !siapa || !buatApa || !ketiga) {
+                showToast('Sila isi semua maklumat');
                 return;
             }
 
@@ -493,6 +535,8 @@
 
             const dataToSave = {
                 id: uniqueId, // Menggunakan ID unik lokal
+                nama_pelajar: nama,
+                kelas_pelajar: kelas,
                 komponen: currentComponent,
                 siapa: siapa,
                 buat_apa: buatApa,
@@ -549,6 +593,10 @@
             <div class="sentence-card">
                 <div class="sentence-card-header">
                     <span class="component-badge ${badgeClass}">${sentence.komponen}</span>
+                    <div>
+                    <span class="component-badge ${badgeClass}">${sentence.komponen}</span>
+                    <span style="margin-left:10px; font-weight:bold; color:#555;">${sentence.nama_pelajar} (${sentence.kelas_pelajar})</span>
+                </div>
                     <button class="btn-delete" onclick="deleteSentence('${sentence.id}')">🗑️ Padam</button>
                 </div>
                 <div class="sentence-text">${sentence.ayat_lengkap}</div>
@@ -604,6 +652,13 @@
                     yPosition = 20;
                 }
 
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(100);
+                const infoStr = `Pelajar: ${sentence.nama_pelajar} (${sentence.kelas_pelajar}) | Tarikh: ${new Date(sentence.tarikh).toLocaleDateString('ms-MY')}`;
+                doc.text(infoStr, 20, yPosition);
+                yPosition += 7;
+
                 doc.setFontSize(12);
                 doc.setFont('helvetica', 'bold');
                 doc.text(`${index + 1}. [${sentence.komponen}]`, margin, yPosition);
@@ -651,6 +706,21 @@
             }, 3000);
         }
 
+        function deleteAllSentences() {
+            if (allSentences.length === 0) {
+                showToast('Tiada ayat untuk dipadam.');
+                return;
+            }
+
+            const sahkan = confirm("Adakah anda pasti ingin memadam SEMUA ayat yang tersimpan? Tindakan ini tidak boleh dibatalkan.");
+
+            if (sahkan) {
+                allSentences = [];
+                saveSentencesToLocalStorage();
+                showToast('Semua ayat telah dipadam!');
+            }
+        }
+
         document.querySelectorAll('.component-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 switchComponent(btn.dataset.component);
@@ -664,6 +734,7 @@
         document.getElementById('btn-save').addEventListener('click', saveSentence);
         document.getElementById('btn-reset').addEventListener('click', resetForm);
         document.getElementById('btn-pdf').addEventListener('click', generatePDF);
+        document.getElementById('btn-delete-all').addEventListener('click', deleteAllSentences);
 
         // Remove elementSdk initialization as it's no longer needed for local storage
         // Remove dataSdk initialization as it's no longer needed for local storage
